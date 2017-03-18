@@ -1,6 +1,6 @@
-#Slack API Auditor
+# Slack API Auditor
 
-Provides a quick and dirty method of collecting Slack access logs and integration logs, then forwards them via Logstash.
+Provides a quick method of collecting Slack access logs and integration logs, then forwards them via Logstash.
 
 
 ### How this works
