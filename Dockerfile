@@ -22,7 +22,7 @@ RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VER
 USER logstash
 WORKDIR /usr/share/logstash
 RUN rm -f ./pipeline/logstash.conf
-RUN echo 'http.host: "127.0.0.1"' > /usr/share/logstash/config/logstash.yml
+RUN echo 'http.host: "127.0.0.1"' > ./config/logstash.yml
 ADD pipeline/ ./pipeline/
 COPY scripts/*.py ./scripts/
 COPY scripts/requirements.txt ./scripts/
