@@ -1,6 +1,6 @@
-from slackclient import SlackClient
 from datetime import datetime
 from dateutil.parser import *
+import slack
 import dateutil
 import tzlocal
 import os
@@ -20,11 +20,13 @@ class SlackAuditor(object):
             In order to create a proper token with required scope follow the guide here:
             https://api.slack.com/tutorials/slack-apps-and-postman you'll need the 'admin' scope
         """
-
-        self.integration_sincedb_path = '/tmp/integration_sincedb'
-        self.access_sincedb_path = '/tmp/access_sincedb'
-        slack_token = os.environ['SLACK_TOKEN']
-        self.sc = SlackClient(slack_token)
+        with open(getenv(
+                 'AUDIT_CONFIG_PATH',
+                 '/usr/share/logstash/scripts/config/config.json')) as config_data:
+            self.config = json.load(config_data)
+        self.integration_sincedb_path = '{}/integration_sincedb'.format(self.config['sincedb_path'])
+        self.access_sincedb_path = '{}/access_sincedb'.format(self.config['sincedb_path'])
+        self.sc = SlackClient(self.config['slack_token'])
         self.integration_sincedb = self._check_sincedb(self.integration_sincedb_path)
         self.access_sincedb = self._check_sincedb(self.access_sincedb_path)
 
@@ -67,12 +69,12 @@ class SlackAuditor(object):
        """
        results = []
        page = 1
-       logs = self.sc.api_call("team.accessLogs", count=1000)
+       logs = self.sc.api_call("team.accessLogs", )
        results.extend(logs['logins'])
        max_pages = self._check_max(logs['paging']['pages'])
        while page < max_pages:
            page += 1
-           logs = self.sc.api_call("team.accessLogs", count=1000, page=page)
+           logs = self.sc.api_call("team.accessLogs", json={'count':'1000', 'page':page})
            results.extend(logs['logins'])
        return results
 
@@ -82,12 +84,12 @@ class SlackAuditor(object):
        """
        results = []
        page = 1
-       logs = self.sc.api_call("team.integrationLogs", count=1000)
+       logs = self.sc.api_call("team.integrationLogs", json={'count':'1000'})
        results.extend(logs['logs'])
        max_pages = self._check_max(logs['paging']['pages'])
        while page < max_pages:
            page += 1
-           logs = self.sc.api_call("team.integrationLogs",count=1000, page=page)
+           logs = self.sc.api_call("team.integrationLogs",json={'count':'1000', 'page':page})
            results.extend(logs['logs'])
        return results
 
