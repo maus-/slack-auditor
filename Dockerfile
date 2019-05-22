@@ -20,9 +20,12 @@ RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VER
     && rm -rf /usr/share/logstash/Python*
 
 USER logstash
-RUN rm -f /usr/share/logstash/pipeline/logstash.conf
+WORKDIR /usr/share/logstash
+RUN rm -f ./pipeline/logstash.conf
 RUN echo 'http.host: "127.0.0.1"' > /usr/share/logstash/config/logstash.yml
-ADD pipeline/ /usr/share/logstash/pipeline/
-COPY scripts/* /usr/share/logstash/scripts/
-RUN pip3.7 install --user -r /usr/share/logstash/scripts/requirements.txt
+ADD pipeline/ ./pipeline/
+COPY scripts/*.py ./scripts/
+COPY scripts/requirements.txt ./scripts/
+COPY scripts/config/config.json ./scripts//config/
+RUN pip3.7 install --user -r ./scripts/requirements.txt
 ENV SLACK_AUDIT_PATH=/usr/share/logstash/scripts/auditor.py

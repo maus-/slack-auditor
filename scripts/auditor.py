@@ -20,13 +20,13 @@ class SlackAuditor(object):
             In order to create a proper token with required scope follow the guide here:
             https://api.slack.com/tutorials/slack-apps-and-postman you'll need the 'admin' scope
         """
-        with open(getenv(
+        with open(os.getenv(
                  'AUDIT_CONFIG_PATH',
                  '/usr/share/logstash/scripts/config/config.json')) as config_data:
             self.config = json.load(config_data)
         self.integration_sincedb_path = '{}/integration_sincedb'.format(self.config['sincedb_path'])
         self.access_sincedb_path = '{}/access_sincedb'.format(self.config['sincedb_path'])
-        self.sc = SlackClient(self.config['slack_token'])
+        self.sc = slack.WebClient(self.config['slack_token'])
         self.integration_sincedb = self._check_sincedb(self.integration_sincedb_path)
         self.access_sincedb = self._check_sincedb(self.access_sincedb_path)
 
