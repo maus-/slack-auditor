@@ -1,5 +1,5 @@
 from slackclient import SlackClient
-from datetime import datetime 
+from datetime import datetime
 from dateutil.parser import *
 import dateutil
 import tzlocal
@@ -20,7 +20,7 @@ class SlackAuditor(object):
             In order to create a proper token with required scope follow the guide here:
             https://api.slack.com/tutorials/slack-apps-and-postman you'll need the 'admin' scope
         """
-        
+
         self.integration_sincedb_path = '/tmp/integration_sincedb'
         self.access_sincedb_path = '/tmp/access_sincedb'
         slack_token = os.environ['SLACK_TOKEN']
@@ -39,7 +39,7 @@ class SlackAuditor(object):
             self._write_sincedb(sincedb_path)
             sincedb = float(open(sincedb_path, 'r').read())
             return datetime.utcfromtimestamp(sincedb)
-            
+
     def _write_sincedb(self, sincedb_path):
             sincedb = open(sincedb_path, 'w')
             sincedb.write(str(time.mktime(datetime.now().timetuple())))
@@ -48,7 +48,7 @@ class SlackAuditor(object):
         """
             Convert the Unix Timestamps to UTC / Pretty Format
         """
-        
+
         utc_time = datetime.utcfromtimestamp(date)
         return utc_time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -75,11 +75,10 @@ class SlackAuditor(object):
            logs = self.sc.api_call("team.accessLogs", count=1000, page=page)
            results.extend(logs['logins'])
        return results
-   
+
     def get_integration_logs(self):
        """
            This function will return all Slack integration logs formatted as a list of hashes.
-           
        """
        results = []
        page = 1
@@ -108,7 +107,7 @@ class SlackAuditor(object):
         results.sort(key=lambda item:item['date_first'], reverse=False)
         self._write_sincedb(self.access_sincedb_path)
         return results
-  
+
     def get_latest_integration_events(self):
         logs = self.get_integration_logs()
         results = []
@@ -119,8 +118,8 @@ class SlackAuditor(object):
         results.sort(key=lambda item:item['date'], reverse=False)
         self._write_sincedb(self.integration_sincedb_path)
         return results
-        
-if __name__ == "__main__":            
+
+if __name__ == "__main__":
     audit = SlackAuditor()
 
     if sys.argv[1] == 'login':
