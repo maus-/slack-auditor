@@ -69,12 +69,12 @@ class SlackAuditor(object):
        """
        results = []
        page = 1
-       logs = self.sc.api_call("team.accessLogs", )
+       logs = self.sc.api_call("team.accessLogs", params={'count':'1000'})
        results.extend(logs['logins'])
        max_pages = self._check_max(logs['paging']['pages'])
        while page < max_pages:
            page += 1
-           logs = self.sc.api_call("team.accessLogs", json={'count':'1000', 'page':page})
+           logs = self.sc.api_call("team.accessLogs", params={'count':'1000', 'page':page})
            results.extend(logs['logins'])
        return results
 
@@ -84,12 +84,12 @@ class SlackAuditor(object):
        """
        results = []
        page = 1
-       logs = self.sc.api_call("team.integrationLogs", json={'count':'1000'})
+       logs = self.sc.api_call("team.integrationLogs", params={'count':'1000'})
        results.extend(logs['logs'])
        max_pages = self._check_max(logs['paging']['pages'])
        while page < max_pages:
            page += 1
-           logs = self.sc.api_call("team.integrationLogs",json={'count':'1000', 'page':page})
+           logs = self.sc.api_call("team.integrationLogs",params={'count':'1000', 'page':page})
            results.extend(logs['logs'])
        return results
 
